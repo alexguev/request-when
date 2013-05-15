@@ -1,49 +1,38 @@
 var _request = require('request'),
-    when = require('when'),
-    pipeline = require('when/pipeline'),
     fn = require('when/function'),
     nodefn = require('when/node/function');
 
-var response = function (results) {
-    return when.resolve(results[0]);
-}
-
-var error = function (resp) {
-    console.log(resp.statusCode)
-    if (resp.statusCode >= 200 && resp.statusCode <= 299) {
-        return when.resolve(resp);
+function first(result) {
+    if (Array.isArray(result)) {
+        return when.resolve(result[0]);
     } else {
-        return when.reject({message: 'Error status code.', statusCode: resp.statusCode});
+        return when.resolve(result);
     }
 }
 
-var request = nodefn.lift(_request);
+function error(resp) {
+    if (resp.statusCode >= 200 && resp.statusCode <= 299) {
+        return when.resolve(resp);
+    } else {
+        return when.reject({message: 'Error status code.', resp: resp});
+    }
+}
+
+var request = fn.compose(nodefn.lift(_request), first, error);
 
 request.get = request;
 
-request.put = nodefn.lift(_request.put);
+request.put = fn.compose(nodefn.lift(_request.put), first, error);
 
-request.post = nodefn.lift(_request.post);
+request.post = fn.compose(nodefn.lift(_request.post), first, error);
 
-request.del = nodefn.lift(_request.del);
+request.del = fn.compose(nodefn.lift(_request.del), first, error);
 
-var f = fn.compose(request, response, error);
-
-f('http://www.google.com')
+request('http://www.google.com')
     .then(function (resp) {
         console.log('GOOD');
-        console.log(resp.length);
     })
     .otherwise(function (err) {
         console.log('BAD');
-        console.log(err.length);
     });
-
-
-_request('http://www.google.com', function (error, response, body) {
- if (!error && response.statusCode == 200) {
-    console.log(body) // Print the google web page.
-  }
-})
-
 
