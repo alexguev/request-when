@@ -1,0 +1,28 @@
+{
+  "name": "request-when",
+  "description": "A promise layer (when) on top of request.",
+  "tags": [
+    "http",
+    "simple",
+    "util",
+    "utility",
+    "promise"
+  ],
+  "version": "0.0.1",
+  "author": "Alexei Guevara <alexei.guevara@intelliware.com>",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/Intelliware/request-when.git"
+  },
+  "bugs": {
+    "url": "http://github.com/Intelliware/request-when/issues"
+  },
+  "engines": [
+    "node >= 0.8.0"
+  ],
+  "main": "index.js",
+  "dependencies": {
+    "request": "~2.21.0",
+    "when": "~2.1.0"
+  }
+}
